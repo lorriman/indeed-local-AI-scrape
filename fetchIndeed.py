@@ -60,7 +60,7 @@ try:
         context = browser.contexts[0]
         page = context.new_page()
         page.goto(config['scrape_url'])
-        time.sleep(30)
+        time.sleep(30) #gives us the time to click the captcha
 
         page_num = 1
         while True:
