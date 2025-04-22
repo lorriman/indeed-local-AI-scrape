@@ -30,9 +30,9 @@ pip install playwright pandas requests pyyaml xlsxwriter
 
 Edit config.yaml to make change to the model, ports etc.
 
-## interrupting
+## interrupting with ctrl-c
 
-the script can take a long time. It's very slow, as is Indeed.com. If you need to interrupt it will still save results to the output excel spreadsheet.
+the script can take a long time. It's very slow, as is Indeed.com. If you need to interrupt (ctrl-c) it will still save results to the output excel spreadsheet.
 
 # the spreadsheet
 
