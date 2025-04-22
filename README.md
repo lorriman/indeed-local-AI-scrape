@@ -32,7 +32,7 @@ pip install playwright pandas requests pyyaml xlsxwriter
 
 ## interrupting with ctrl-c
 
-the script can take a long time. It's very slow, as is Indeed.com. If you need to interrupt (ctrl-c) it will still save results to the output excel spreadsheet.
+The script is very slow, as is Indeed.com. If you need to interrupt (ctrl-c) it will still save results to the output excel spreadsheet.
 
 ## the spreadsheet
 
