@@ -28,7 +28,7 @@ pip install playwright pandas requests pyyaml xlsxwriter
 
 (Assuming python 3 and pip installed)
 
-Edit config.yaml to make change to the model, ports etc.
+(Edit config.yaml to make change to the model, ports etc if needed; defaults are fine if the above is unchanged.)
 
 ## interrupting with ctrl-c
 
