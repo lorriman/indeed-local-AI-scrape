@@ -1,0 +1,9 @@
+scrape_url: "https://uk.indeed.com/jobs?q=flutter+developer&l=uk&from=searchOnDesktopSerp"
+browser_cdp_url: "http://localhost:9222"
+ollama_endpoint: "http://localhost:11434"
+ollama_model: "qwen2.5:3b"
+
+#"qwen2:0.5b"
+summary_prompt: "summarize this job description using numbered sections, listing first the job requirements in section 1. No more than 200 words in total. Don't include benefits or holidays."
+max_cell_length: 65536
+chrome_instance: /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --args --profile-directory="<booking>"
