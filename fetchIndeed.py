@@ -13,12 +13,49 @@ with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
 # Initialize Ollama client
+import requests
+import json
+
+
 def query_ollama(prompt, model=config['ollama_model']):
+
+    #model needs setting up or else it responds inconsistently 
+
+    # Define the system prompt to enforce instruction-following
+    system_prompt = "You are Qwen, created by Alibaba Cloud. Follow the user's instructions exactly without summarizing or altering the task unless explicitly asked."
+
+    # Structure the messages array with system and user roles
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": prompt}
+    ]
+
+    # Set model parameters (asked an AI for this)
+    options = {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "repeat_penalty": 1.05,
+        "top_k": 20,
+        "num_ctx": 32000  # Larger context window to handle longish prompts
+    }
+
+    # Make the API request to the /api/chat endpoint
     response = requests.post(
-        f"{config['ollama_endpoint']}/api/generate",
-        json={"model": model, "prompt": prompt, "stream": False}
+        f"{config['ollama_endpoint']}/api/chat",
+        json={
+            "model": model,
+            "messages": messages,
+            "stream": False,
+            "options": options
+        }
     )
-    return json.loads(response.text)['response'].strip()
+
+    # Check for a successful response
+    if response.status_code != 200:
+        raise Exception(f"API request failed with status {response.status_code}: {response.text}")
+
+    # Extract the response content
+    return json.loads(response.text)["message"]["content"].strip()
 
 # Signal handler for interruption
 def signal_handler(sig, frame):
@@ -31,7 +68,7 @@ def signal_handler(sig, frame):
     print(f"Missed {timeout_count} items due to timeouts.")
     sys.exit(0)
 
-# Save data to Excel with formatting
+# Save data to Excel with some formatting
 def save_to_excel(data):
     df = pd.DataFrame(data)
     writer = pd.ExcelWriter('datadump.xlsx', engine='xlsxwriter')
@@ -77,27 +114,35 @@ try:
                         job_desc = page.locator('div#jobDescriptionText')
                         text_elements = [text for text in job_desc.locator('//*[text()]').all_inner_texts() if text]
                         full_text = '.'.join(text_elements).strip()
+                        print('############ NEW JOB ###########')
                       
                         
-                        # Updated degree prompt
-                        degree_prompt = f"In the following text, is a degree required? Answer with 'Yes degree' or 'No degree' followed by a period and then give the snippet of degree text you found but no more than 50 words.  Here is the text: \"{full_text}\""
-                        qwen_answer = query_ollama(degree_prompt)
-                        degree_required = qwen_answer.split('.')[0].strip()
+                        # 'required' prompt - for job requirements
+                        prompt = config['required_prompt']+f"\"{full_text}\""
+                        print('######## REQUIRED PROMPT'+prompt[:400]+'...')
+                        qwen_answer = query_ollama(prompt)
+                        required=''
+                        details=''
+                        if '.' in qwen_answer: # full-stop/period denotes valid response content as asked for in the query, and avoids exception
+                            required = qwen_answer.split('.')[0].strip()
+                            print("####REQUIRED\n"+required)
+                            details = qwen_answer.split('.', 1)[1].strip()
+                            print("####DETAILS\n"+details)                      
                         
                         # Get summary
-                        summary_prompt = f"Give a 20 word summary of this job in this text:\"{full_text}\""
+                        summary_prompt = f"Give a twenty word summary of this job in this text. Maximum 20 words, here is the text:\"{full_text}\""
+                        print("######### SUMMARY PROMPT "+summary_prompt[:100]+'...')
                         summary = query_ollama(summary_prompt)
                         short_summary = summary[:config['max_cell_length']]
-                        #summary_prompt = f"{config['summary_prompt']}. Here is the text:\"{full_text}\""
-                        #summary = query_ollama(summary_prompt)
-                        #summary = summary[:config['max_cell_length']]
+                        print("####SUMMARY\n"+short_summary)
                         
+                        print("######## LINK: "+"https://indeed.com"+href)
+
                         data.append({
                             'short_summary': short_summary,
-                            #'job_summary': summary,
-                            'degree_required': degree_required,
-                            'degree_details': qwen_answer,
-                            'link': href
+                            'required': required,
+                            'details': details,
+                            'link': "https://indeed.com"+href
                         })
                     except Exception as e:
                         if "Timeout" in str(e):
