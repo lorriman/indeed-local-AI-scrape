@@ -3,7 +3,7 @@ browser_cdp_url: "http://localhost:9222"
 ollama_endpoint: "http://localhost:11434"
 ollama_model: "qwen2.5:3b"
 
-required_pompt: "In the following text, if the job is remote or hybrid remote, say 'Is Remote.' followed by how often one must come in to work. Do this in no more than fifty (50) words. Otherwise reply with 'Not remote.'. Here is the text:"
+required_prompt: "In the following text, if the job is remote or hybrid remote, say 'Is Remote.' followed by how often one must come in to work. Do this in no more than fifty (50) words. Otherwise reply with 'Not remote.'. Here is the text:"
 
 #"qwen2:0.5b"
 summary_prompt: "Summarize this job description No more than one hundred words in total using numbered sections, listing first the job requirements in section 1.  Don't include benefits or holidays. Absolute maximum of 100 words in total for this please."
